@@ -1,6 +1,6 @@
 // Compact translucent banner; the game image keeps its original size.
 import fs from 'node:fs';import path from 'node:path';import {spawn,execFileSync} from 'node:child_process';import {once} from 'node:events';import {createCanvas,registerFont} from 'canvas';
-registerFont('/System/Library/Fonts/Menlo.ttc',{family:'Banner'});
+const font=process.env.MC_VIDEO_FONT||'/System/Library/Fonts/Menlo.ttc';if(fs.existsSync(font))registerFont(font,{family:'Banner'});
 const run=process.argv[2],dir=path.resolve('runs',run),source=path.join(dir,'full-playthrough.mp4'),out=path.join(dir,'full-playthrough-banner.mp4');
 const events=fs.readFileSync(path.join(dir,'events.jsonl'),'utf8').trim().split('\n').map(JSON.parse),zero=Date.parse(events.find(e=>e.type==='recording_started').time),timeline=events.map(e=>({...e,at:(Date.parse(e.time)-zero)/1000})).sort((a,b)=>a.at-b.at);const config=fs.existsSync(path.join(dir,'run-config.json'))?JSON.parse(fs.readFileSync(path.join(dir,'run-config.json'))):{planner:'openai/gpt-6-astra'};const planner=config.planner.includes('sol')?'SOL':'ASTRA';const canvas=createCanvas(960,78),g=canvas.getContext('2d');let i=0,objective='Waiting for plan',action='Waiting for action',done=false,position=null;
 function fit(s,width){s=String(s).replace(/[\r\n]+/g,' ');if(g.measureText(s).width<=width)return s;while(s.length&&g.measureText(s+'…').width>width)s=s.slice(0,-1);return s+'…';}

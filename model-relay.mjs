@@ -1,13 +1,38 @@
-// Read the user-authorized secret into memory. Never log credentials or request bodies.
-import {execFileSync} from 'node:child_process';
 import http from 'node:http';
-const token=execFileSync('gcloud',['auth','application-default','print-access-token'],{encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();
-const secretResponse=await fetch('https://secretmanager.googleapis.com/v1/projects/useful-memory-477923-v7/secrets/OPENROUTER_API_KEY/versions/latest:access',{headers:{Authorization:'Bearer '+token}});
-if(!secretResponse.ok)throw Error('Secret Manager returned HTTP '+secretResponse.status);
-const secret=await secretResponse.json(),key=Buffer.from(secret.payload.data,'base64').toString().trim();
-async function call(path,body){
- const started=Date.now(),controllers=[new AbortController(),new AbortController()];let timer;
- const attempt=async index=>{const r=await fetch('https://openrouter.ai'+path,{method:'POST',headers:{Authorization:'Bearer '+key,'Content-Type':'application/json',Connection:'close'},body:JSON.stringify(body),signal:AbortSignal.any([controllers[index].signal,AbortSignal.timeout(60000)])});const data=await r.json();if(!r.ok||data.error)throw Error('Model HTTP '+r.status+': '+(data.error?.message||'Request failed'));return {index,data};};
- try{const a=attempt(0),b=new Promise((resolve,reject)=>{timer=setTimeout(()=>attempt(1).then(resolve,reject),path.endsWith('decisions')?3000:10000);});const winner=await Promise.any([a,b]);clearTimeout(timer);controllers[1-winner.index].abort();return {data:winner.data,latencyMs:Date.now()-started};}finally{clearTimeout(timer);controllers.forEach(c=>c.abort());}
+import { pathToFileURL } from 'node:url';
+import { authorized, localToken, positiveInt } from './lib/config.mjs';
+import { createModelClient, validateRequest } from './lib/model-client.mjs';
+
+export function createRelay({ token, request, env = process.env } = {}) {
+  let active = 0;
+  const concurrency = positiveInt(env.MC_RELAY_CONCURRENCY, 2, 8);
+  return http.createServer({ requestTimeout: 15000, headersTimeout: 10000 }, async (req, res) => {
+    const fail = status => { res.writeHead(status, { 'Connection': 'close' }); res.end(); };
+    if (!authorized(req, token)) return fail(403);
+    if (req.method !== 'POST' || req.url !== '/') return fail(405);
+    if (req.headers['content-type']?.split(';')[0] !== 'application/json') return fail(415);
+    if (active >= concurrency) return fail(429);
+    active++;
+    try {
+      const chunks = []; let size = 0;
+      for await (const chunk of req) {
+        size += chunk.length;
+        if (size > 2_000_000) { fail(413); return; }
+        chunks.push(chunk);
+      }
+      const { path, body } = JSON.parse(Buffer.concat(chunks));
+      validateRequest(path, body, env);
+      const result = await request(path, body);
+      res.writeHead(200, { 'Content-Type': 'application/json' }); res.end(JSON.stringify(result));
+    } catch { if (!res.headersSent) fail(502); }
+    finally { active--; }
+  });
 }
-http.createServer(async(req,res)=>{try{let input='';for await(const chunk of req){input+=chunk;if(input.length>2000000)throw Error('Request too large');}const {path,body}=JSON.parse(input);if(!['/api/alpha/decisions','/api/v1/chat/completions'].includes(path))throw Error('Unsupported model endpoint');const result=await call(path,body);res.writeHead(200,{'Content-Type':'application/json'});res.end(JSON.stringify(result));}catch(e){res.writeHead(502,{'Content-Type':'application/json'});res.end(JSON.stringify({error:e.message}));}}).listen(3099,'127.0.0.1',()=>console.log('Local model relay ready; credential loaded from authorized Google Secret Manager via application default credentials.'));
+export function startRelay() {
+  const env = { ...process.env }; delete env.MODEL_RELAY;
+  const request = createModelClient({ env });
+  const server = createRelay({ token: localToken(env), request, env });
+  server.listen(positiveInt(env.MODEL_RELAY_PORT, 3099, 65535), '127.0.0.1', () => console.log('Authenticated local model relay ready.'));
+  return server;
+}
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) startRelay();

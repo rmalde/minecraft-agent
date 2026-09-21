@@ -122,3 +122,7 @@ optimization/seed-route.svg
 *secrets*.yml
 *secret*.json
 *key*.json
+
+# Private local-service authentication
+.local/
+observer/classes/

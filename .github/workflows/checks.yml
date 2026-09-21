@@ -1,0 +1,24 @@
+name: Portable setup and regression checks
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run prepare:local
+      - run: npm test
+      - run: npm run test:setup
+      - run: MC_JAVA_HOME="$JAVA_HOME_17_X64" ./build-observer.sh
+  native-build:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - run: python3 native-client/install.py --libraries-only
+      - run: ./build-observer.sh && ./native-client/build.sh

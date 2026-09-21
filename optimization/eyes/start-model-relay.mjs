@@ -1,5 +1,3 @@
-// Reuse the authorized model client's in-memory credential. Never return the key.
-const [endpoint]=await (await fetch('http://127.0.0.1:9229/json/list')).json();
-const ws=new WebSocket(endpoint.webSocketDebuggerUrl);await new Promise(r=>ws.addEventListener('open',r,{once:true}));
-const expression=`(async()=>{const http=process.getBuiltinModule('http');const req=process.getBuiltinModule('module').createRequire(process.cwd()+'/relay.cjs');const models=req('./models.mjs');if(globalThis.minecraftModelRelay)return 'already running';globalThis.minecraftModelRelay=http.createServer(async(req,res)=>{try{if(req.method!=='POST')throw Error('POST required');let raw='';for await(const part of req){raw+=part;if(raw.length>2000000)throw Error('Request too large');}const {path,body}=JSON.parse(raw);if(!['/api/v1/chat/completions','/api/alpha/decisions'].includes(path))throw Error('Unsupported model endpoint');const result=await models.request(path,body);res.writeHead(200,{'Content-Type':'application/json'});res.end(JSON.stringify(result));}catch(e){res.writeHead(502,{'Content-Type':'application/json'});res.end(JSON.stringify({error:e.message}));}});await new Promise(r=>globalThis.minecraftModelRelay.listen(3099,'127.0.0.1',r));return 'local model relay ready';})()`;
-ws.send(JSON.stringify({id:1,method:'Runtime.evaluate',params:{expression,awaitPromise:true,returnByValue:true}}));await new Promise((resolve,reject)=>ws.addEventListener('message',e=>{const m=JSON.parse(e.data);if(m.id===1){console.log(m.result?.result?.value||m.result?.exceptionDetails?.text);resolve();}}));ws.close();
+// Compatibility entry point; never inject a second unauthenticated relay into a debugger.
+import { startRelay } from '../../model-relay.mjs';
+startRelay();

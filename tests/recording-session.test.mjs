@@ -1,0 +1,9 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { startRecording } from '../recording-session.js';
+const canvas={captureStream:()=>({})};
+class Recorder {state='inactive';start(){this.state='recording';}stop(){this.state='inactive';queueMicrotask(()=>this.onstop?.());}}
+test('recorder constructor failure never reserves a capture',async()=>{const calls=[];await assert.rejects(startRecording({canvas,id:'x',Recorder:class{constructor(){throw Error('unsupported');}},send:async p=>calls.push(p)}),/unsupported/);assert.deepEqual(calls,[]);});
+test('recorder start failure aborts reservation without claiming ready or complete',async()=>{const calls=[];await assert.rejects(startRecording({canvas,id:'x',Recorder:class extends Recorder{start(){throw Error('start failed');}},send:async p=>calls.push(p)}),/start failed/);assert.deepEqual(calls,['/recording/start?id=x','/recording/abort?id=x']);});
+test('failed chunk aborts capture instead of claiming completed evidence',async()=>{const calls=[];let resolve;const done=new Promise(r=>resolve=r);const recorder=await startRecording({canvas,id:'x',Recorder,send:async p=>{calls.push(p);if(p==='/recording?id=x')throw Error('413');},onError:()=>{},onFinish:resolve});recorder.ondataavailable({data:new Blob(['bytes'])});await done;assert.deepEqual(calls,['/recording/start?id=x','/recording/ready?id=x','/recording?id=x','/recording/abort?id=x']);});
+test('successful recorder waits for chunks before completion',async()=>{const calls=[];let resolve;const done=new Promise(r=>resolve=r);const recorder=await startRecording({canvas,id:'x',Recorder,send:async p=>calls.push(p),onFinish:resolve});recorder.ondataavailable({data:new Blob(['bytes'])});recorder.stop();await done;assert.equal(calls.at(-1),'/recording/done?id=x');});

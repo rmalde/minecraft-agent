@@ -16,11 +16,19 @@ The video is 960 × 540 at 20 frames per second, without audio. A translucent fu
 
 **Recordings and generated evidence remain local and are excluded from Git.** The local video is `runs/nether-final-08/full-playthrough-banner.mp4`. Its verification, timing comparison, and action log are in the same run directory. This repository contains the code, tests, build scripts, and route data. It does not include Minecraft binaries, downloaded runtimes, saved worlds, or credentials.
 
-## Credentials
+## Setup and credentials
 
-Model calls obtain the OpenRouter key from Google Secret Manager and keep it in process memory. The current scripts refer to the original deployment's project and secret name; these names are not credentials. Configure those references for your own project in `model-relay.mjs` and `models.mjs`. For the relay, authenticate with Google application default credentials, grant access to the secret, and set `MODEL_RELAY=http://127.0.0.1:3099` when starting the agent. Do not place keys in source files or run logs.
+Start with [SETUP.md](SETUP.md) for the portable, local-only installation, runtime
+selection, verified downloads, explicit model credentials, and optional recording.
+Run `npm ci --ignore-scripts`, then `npm run prepare:local` and `npm run configure`.
+The project requires Node 22+, Python 3.9+, and a JDK 17+. Native rendering is
+macOS-only; headless play does not need the native renderer.
 
-The native renderer and launch scripts were developed on macOS. Runtime paths and local server settings must be configured for another machine. Historical review notes describe earlier versions; use the current code and the result above for the latest behavior.
+Credentials are explicitly configured with `MC_OPENROUTER_KEY_FILE`,
+`MC_OPENROUTER_API_KEY`, or `MC_GOOGLE_PROJECT`/`MC_GOOGLE_SECRET`.
+No original deployment project or personal runtime path is used. The optional
+local relay requires authentication and applies request limits. Use a dedicated
+provider-side monetary cap as well. See SETUP.md before starting any paid run.
 
 ## Game settings
 
@@ -43,7 +51,7 @@ Model IDs:
 - `openai/gpt-6-astra` (default) or `openai/gpt-5.6-sol` (`PLANNER_MODEL`), through `/api/v1/chat/completions`
 - `typesafe/jev-1.13`, through `/api/alpha/decisions`
 
-The key is loaded into process memory from Google Secret Manager. The general `OPENROUTER_API_KEY` environment variable is ignored to prevent use of an unrelated key. The key is not written to run logs.
+The explicitly configured key is loaded into process memory. The general `OPENROUTER_API_KEY` environment variable is ignored to prevent use of an unrelated key. The key is not written to run logs.
 
 ## Files and evidence
 
@@ -55,7 +63,7 @@ The `combat-lab` directory is a separate test server. It can use prepared items 
 
 ## Start a run
 
-Install dependencies with `npm install`. Start `server/server.jar` from the `server` directory with a compatible Java runtime. The installed Minecraft Java runtime works for this server.
+Complete [SETUP.md](SETUP.md) first, including verified server setup and explicit EULA acceptance. Use `./start-server.sh` so the patched logging classpath is applied; do not launch the old server JAR directly.
 
 Use `./start-server.sh` to start the main server with its read-only sensor. For a fresh recording, first choose an unused world name in `server/server.properties`. Use a new log directory with the same name. Start the agent from this directory:
 
@@ -68,11 +76,11 @@ DRAGON_SENSOR_URL=http://127.0.0.1:3093 node nether-agent.mjs
 
 When the local mirror is listening on port 25578, start `python3 native-client/launch.py`. The agent waits for the hidden client and recorder before the first action. The native client uses an isolated game directory. It does not change the user's Minecraft settings. The recorder stops after the exit portal event. To stop a test at an action boundary, create `runs/NEW_RUN/stop`. Wait for `full-playthrough.mp4.finished.json` before closing the native client.
 
-The native client dependencies are installed with `python3 native-client/install.py`; build the display and capture adapter with `./native-client/build.sh`. The supplied launch script uses its local Java 17 runtime. Model access requires available OpenRouter credit.
+The native client dependencies are installed with `python3 native-client/install.py`; build the display and capture adapter with `./native-client/build.sh`. Java tools are selected through `MC_JAVA_HOME`, `JAVA_HOME`, or `PATH`. Model access requires available OpenRouter credit.
 
 A new log directory alone does not reset the world. Stop the server, choose a new unused `level-name`, and start it again with the same seed. Keep the old world as evidence.
 
-Run `node --test evidence.test.mjs native-mirror.test.mjs optimization/*.test.mjs optimization/pass-2/policy.test.mjs optimization/nether/*.test.mjs` to check completion events, native packets, action policy, and pathfinder cancellation. Live server tests remain necessary for movement, crafting, combat, and recording.
+Run `npm test` and `npm run test:setup` to check completion events, native packets, action policy, and pathfinder cancellation. Live server tests remain necessary for movement, crafting, combat, and recording.
 
 ## Sources
 
