@@ -1,15 +1,7 @@
-import {execFileSync} from 'node:child_process';
+import { createModelClient } from './lib/model-client.mjs';
 export const plannerModel=process.env.PLANNER_MODEL||'openai/gpt-6-astra';
 export const plannerName=plannerModel.includes('sol')?'Sol':'Astra';
-let key;
-export async function request(path,body){
- if(process.env.MODEL_RELAY){for(let attempt=0;attempt<4;attempt++){try{const response=await fetch(process.env.MODEL_RELAY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({path,body}),signal:AbortSignal.timeout(125000)});const data=await response.json();if(!response.ok||data.error)throw Error(data.error||'Local model relay failed');return data;}catch(error){if(attempt===3||!(/fetch failed|timeout|timed out|ECONNRESET|socket|5\d\d/i.test(error.message)))throw error;console.error('Temporary model request failure; retry '+(attempt+1));await new Promise(r=>setTimeout(r,1000*2**attempt));}}}
- key ||= execFileSync('gcloud',['secrets','versions','access','latest','--secret=OPENROUTER_API_KEY','--project=useful-memory-477923-v7'],{encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();
- const started=Date.now();
- const response=await fetch('https://openrouter.ai'+path,{method:'POST',headers:{Authorization:'Bearer '+key,'Content-Type':'application/json'},body:JSON.stringify(body),signal:AbortSignal.timeout(120000)});
- const data=await response.json();if(!response.ok||data.error)throw new Error(`Model HTTP ${response.status}: ${data.error?.message}`);
- return {data,latencyMs:Date.now()-started};
-}
+export const request=createModelClient();
 export function compactObservation(state){const knownSeed=state.knownSeed?{...state.knownSeed,bastionChestLoot:state.knownSeed.bastionChestLoot?.map(c=>({...c,loot:c.loot.reduce((a,i)=>({...a,[i.name]:(a[i.name]||0)+i.count}),{})}))}:undefined;return {...state,supplies:state.supplies?{...state.supplies,mobs:state.supplies.mobs?.filter(e=>e.distance<48).sort((a,b)=>a.distance-b.distance).slice(0,16),drops:state.supplies.drops?.filter(e=>!state.position||Math.hypot(e.position.x-state.position.x,e.position.y-state.position.y,e.position.z-state.position.z)<24).slice(0,16)}:undefined,knownSeed,recent:state.recent?.slice(-5).map(({action,result,position})=>({action,result,position})),hotbar:undefined,equipment:undefined,xp:undefined,record:undefined,recordReady:undefined,recordFinished:undefined,looted:undefined};}
 export async function decide(state,options){
  state=compactObservation(state);

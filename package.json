@@ -4,16 +4,25 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test",
+    "test": "node scripts/test.mjs",
     "probe": "node probe.mjs",
-    "postinstall": "node patch-pathfinder.mjs && node prepare-viewer.mjs"
+    "configure": "node scripts/configure.mjs",
+    "prepare:local": "node patch-pathfinder.mjs && node prepare-viewer.mjs",
+    "doctor": "node scripts/doctor.mjs",
+    "test:setup": "node --test tests/*.test.mjs && python3 -m unittest discover -s tests -p \"test_*.py\""
   },
   "dependencies": {
-    "canvas": "^3.2.3",
-    "minecraft-assets": "^1.19.0",
-    "mineflayer": "latest",
-    "mineflayer-pathfinder": "latest",
-    "prismarine-viewer": "latest",
-    "vec3": "latest"
+    "canvas": "3.2.3",
+    "minecraft-assets": "1.19.0",
+    "mineflayer": "4.39.0",
+    "mineflayer-pathfinder": "2.4.5",
+    "prismarine-viewer": "1.33.0",
+    "vec3": "0.2.0"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "overrides": {
+    "uuid": "11.1.1"
   }
 }

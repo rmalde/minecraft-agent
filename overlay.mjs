@@ -1,7 +1,7 @@
 // Build an accurate display strip from timestamped model and game events.
 // The complete, unmodified native capture is retained beside the output.
 import fs from 'node:fs';import path from 'node:path';import {spawn,execFileSync} from 'node:child_process';import {once} from 'node:events';import {createCanvas,registerFont} from 'canvas';
-registerFont('/System/Library/Fonts/Supplemental/Arial.ttf',{family:'Overlay'});registerFont('/System/Library/Fonts/Supplemental/Arial Bold.ttf',{family:'Overlay',weight:'bold'});
+const font=process.env.MC_VIDEO_FONT||'/System/Library/Fonts/Supplemental/Arial.ttf';if(fs.existsSync(font))registerFont(font,{family:'Overlay'});
 const run=process.argv[2];if(!run)throw Error('Usage: node overlay.mjs RUN [preview-seconds]');const dir=path.resolve('runs',run),source=path.join(dir,'full-playthrough.mp4'),testSeconds=Number(process.env.OVERLAY_TEST_SECONDS||0),offset=Number(process.env.OVERLAY_TEST_START||0),out=path.join(dir,testSeconds?'overlay-test.mp4':'full-playthrough-overlay.mp4');
 const events=fs.readFileSync(path.join(dir,'events.jsonl'),'utf8').trim().split('\n').map(JSON.parse);const started=events.find(e=>e.type==='recording_started');const zero=Date.parse(started.time);const media=JSON.parse(execFileSync('ffprobe',['-v','error','-show_entries','format=duration:stream=width,height','-of','json',source],{encoding:'utf8'}));const duration=testSeconds||Number(media.format.duration),width=960,bandHeight=120;
 const config=JSON.parse(fs.readFileSync(path.join(dir,'run-config.json')));const modelName=config.planner.includes('astra')?'ASTRA':'SOL';const timeline=events.map(e=>({...e,at:(Date.parse(e.time)-zero)/1000})).sort((a,b)=>a.at-b.at);

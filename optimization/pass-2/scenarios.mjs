@@ -1,7 +1,7 @@
 // Prepared scenarios on port 25577 only. Never connects to the full-run server.
 import fs from 'node:fs';import {spawn} from 'node:child_process';import mineflayer from 'mineflayer';import pf from 'mineflayer-pathfinder';import {Vec3} from 'vec3';import {installBoat} from '../../boat.mjs';import {installBoat as oldBoat} from '../../runs/optimized-final-04/source/boat.mjs';import {approachEndCover} from '../../navigation.mjs';import {decide} from '../../models.mjs';
 const sleep=ms=>new Promise(r=>setTimeout(r,ms)),root='scenario-pass2',results=process.env.SKIP_BOAT?JSON.parse(fs.readFileSync('optimization/pass-2/boat-results.json')):[];
-const java='/Users/ronak/Library/Application Support/minecraft/runtime/java-runtime-epsilon/mac-os-arm64/java-runtime-epsilon/jre.bundle/Contents/Home/bin/java';
+const java=process.env.MC_JAVA_HOME||process.env.JAVA_HOME ? (process.env.MC_JAVA_HOME||process.env.JAVA_HOME)+'/bin/java' : 'java';
 const server=spawn(java,['-Xms256M','-Xmx1G','-jar','server.jar','nogui'],{cwd:root,stdio:['pipe','pipe','pipe']});const log=fs.createWriteStream(root+'/scenario-server.log');server.stdout.pipe(log);server.stderr.pipe(log);
 let bot;const cmd=async(s,ms=300)=>{server.stdin.write(s+'\n');await sleep(ms);};
 try{

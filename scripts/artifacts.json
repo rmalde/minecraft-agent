@@ -1,0 +1,127 @@
+{
+  "javassist": {
+    "url": "https://repo.maven.apache.org/maven2/org/javassist/javassist/3.30.2-GA/javassist-3.30.2-GA.jar",
+    "path": "observer/javassist.jar",
+    "sha256": "eba37290994b5e4868f3af98ff113f6244a6b099385d9ad46881307d3cb01aaf"
+  },
+  "log4j-api": {
+    "url": "https://repo.maven.apache.org/maven2/org/apache/logging/log4j/log4j-api/2.26.1/log4j-api-2.26.1.jar",
+    "path": "native-client/libraries/log4j-api-2.26.1.jar",
+    "sha256": "f1810a4704ccce019d02bba029dc02a4f2ac0c997f647b465e7d409c1927f822"
+  },
+  "log4j-core": {
+    "url": "https://repo.maven.apache.org/maven2/org/apache/logging/log4j/log4j-core/2.26.1/log4j-core-2.26.1.jar",
+    "path": "native-client/libraries/log4j-core-2.26.1.jar",
+    "sha256": "2ec8c3bf5a6d7c89be8620116a2fc973f7dda1ad0261ad393c4d4726edfd3dcb"
+  },
+  "jna": {
+    "url": "https://repo.maven.apache.org/maven2/net/java/dev/jna/jna/5.13.0/jna-5.13.0.jar",
+    "path": "native-client/libraries/jna-5.13.0.jar",
+    "sha256": "66d4f819a062a51a1d5627bffc23fac55d1677f0e0a1feba144aabdd670a64bb"
+  },
+  "lwjgl": {
+    "url": "https://repo.maven.apache.org/maven2/org/lwjgl/lwjgl/3.3.1/lwjgl-3.3.1.jar",
+    "path": "native-client/libraries/lwjgl-3.3.1.jar",
+    "sha256": "cf83f90e32fb973ff5edfca4ef35f55ca51bb70a579b6a1f290744f552e8e484"
+  },
+  "lwjgl-natives-macos-arm64": {
+    "url": "https://repo.maven.apache.org/maven2/org/lwjgl/lwjgl/3.3.1/lwjgl-3.3.1-natives-macos-arm64.jar",
+    "path": "native-client/libraries/lwjgl-3.3.1-natives-macos-arm64.jar",
+    "sha256": "7197e89ab80a2a2183b4ee925ccb44e572f0cb757a92776adf8265269200a36a"
+  },
+  "lwjgl-natives-macos": {
+    "url": "https://repo.maven.apache.org/maven2/org/lwjgl/lwjgl/3.3.1/lwjgl-3.3.1-natives-macos.jar",
+    "path": "native-client/libraries/lwjgl-3.3.1-natives-macos.jar",
+    "sha256": "f48e610a981dca515b9bbe7345cc76e3450c13404b052d8ac357ef0af8e90abf"
+  },
+  "lwjgl-jemalloc": {
+    "url": "https://repo.maven.apache.org/maven2/org/lwjgl/lwjgl-jemalloc/3.3.1/lwjgl-jemalloc-3.3.1.jar",
+    "path": "native-client/libraries/lwjgl-jemalloc-3.3.1.jar",
+    "sha256": "ee49fc0a8d9456452e54cd6f777823eda666e2c63fc14d65b2fd2cc2cfed5dbe"
+  },
+  "lwjgl-jemalloc-natives-macos-arm64": {
+    "url": "https://repo.maven.apache.org/maven2/org/lwjgl/lwjgl-jemalloc/3.3.1/lwjgl-jemalloc-3.3.1-natives-macos-arm64.jar",
+    "path": "native-client/libraries/lwjgl-jemalloc-3.3.1-natives-macos-arm64.jar",
+    "sha256": "e74d0e13ac02f4102c20c17f0d416608ad85343495ecae30029df6568bac2d27"
+  },
+  "lwjgl-jemalloc-natives-macos": {
+    "url": "https://repo.maven.apache.org/maven2/org/lwjgl/lwjgl-jemalloc/3.3.1/lwjgl-jemalloc-3.3.1-natives-macos.jar",
+    "path": "native-client/libraries/lwjgl-jemalloc-3.3.1-natives-macos.jar",
+    "sha256": "07aab03094058e38a9876ba9339e08a2240394ef888b7e7fcfd4762358f6d968"
+  },
+  "lwjgl-openal": {
+    "url": "https://repo.maven.apache.org/maven2/org/lwjgl/lwjgl-openal/3.3.1/lwjgl-openal-3.3.1.jar",
+    "path": "native-client/libraries/lwjgl-openal-3.3.1.jar",
+    "sha256": "7325ee1b91a8a10c0626c69b557a88f2df6ac1bdca0e52e2a92d324249f2cad0"
+  },
+  "lwjgl-openal-natives-macos-arm64": {
+    "url": "https://repo.maven.apache.org/maven2/org/lwjgl/lwjgl-openal/3.3.1/lwjgl-openal-3.3.1-natives-macos-arm64.jar",
+    "path": "native-client/libraries/lwjgl-openal-3.3.1-natives-macos-arm64.jar",
+    "sha256": "c22ecbcef8fee4aeeaf981032df3e2cbc30a911a90252edac1f149797d587575"
+  },
+  "lwjgl-openal-natives-macos": {
+    "url": "https://repo.maven.apache.org/maven2/org/lwjgl/lwjgl-openal/3.3.1/lwjgl-openal-3.3.1-natives-macos.jar",
+    "path": "native-client/libraries/lwjgl-openal-3.3.1-natives-macos.jar",
+    "sha256": "5184ca24b8dfe97255b6cb558c529bd6a388981bbe55e213718e3fd2bd9e86e4"
+  },
+  "lwjgl-opengl": {
+    "url": "https://repo.maven.apache.org/maven2/org/lwjgl/lwjgl-opengl/3.3.1/lwjgl-opengl-3.3.1.jar",
+    "path": "native-client/libraries/lwjgl-opengl-3.3.1.jar",
+    "sha256": "e436d2144f3a36fff772fd64233316809b795f390defd4d55660fc686e7c2834"
+  },
+  "lwjgl-opengl-natives-macos-arm64": {
+    "url": "https://repo.maven.apache.org/maven2/org/lwjgl/lwjgl-opengl/3.3.1/lwjgl-opengl-3.3.1-natives-macos-arm64.jar",
+    "path": "native-client/libraries/lwjgl-opengl-3.3.1-natives-macos-arm64.jar",
+    "sha256": "dbd110044eae8adbca8e3c7a730529a351559e74cea887bb3cd6ef0dc016f295"
+  },
+  "lwjgl-opengl-natives-macos": {
+    "url": "https://repo.maven.apache.org/maven2/org/lwjgl/lwjgl-opengl/3.3.1/lwjgl-opengl-3.3.1-natives-macos.jar",
+    "path": "native-client/libraries/lwjgl-opengl-3.3.1-natives-macos.jar",
+    "sha256": "711f29972888509262a957f1b3138bfa9b505519d11df6e5763d1c9a3f8b3c5d"
+  },
+  "lwjgl-glfw": {
+    "url": "https://repo.maven.apache.org/maven2/org/lwjgl/lwjgl-glfw/3.3.1/lwjgl-glfw-3.3.1.jar",
+    "path": "native-client/libraries/lwjgl-glfw-3.3.1.jar",
+    "sha256": "08bbc34eb752f863e37f83ab1c7b0c22f7cb26d0f8fb0a4a4a8c6028ac45b385"
+  },
+  "lwjgl-glfw-natives-macos-arm64": {
+    "url": "https://repo.maven.apache.org/maven2/org/lwjgl/lwjgl-glfw/3.3.1/lwjgl-glfw-3.3.1-natives-macos-arm64.jar",
+    "path": "native-client/libraries/lwjgl-glfw-3.3.1-natives-macos-arm64.jar",
+    "sha256": "9c795578748d58f42d5d472ed80d2e96993bd4fb1ffc0058ceda2c631ef3989a"
+  },
+  "lwjgl-glfw-natives-macos": {
+    "url": "https://repo.maven.apache.org/maven2/org/lwjgl/lwjgl-glfw/3.3.1/lwjgl-glfw-3.3.1-natives-macos.jar",
+    "path": "native-client/libraries/lwjgl-glfw-3.3.1-natives-macos.jar",
+    "sha256": "1b6cff9e648a722ee0cc14669612052aa5ba809469fa8b3fb21f24c3abe70de9"
+  },
+  "lwjgl-stb": {
+    "url": "https://repo.maven.apache.org/maven2/org/lwjgl/lwjgl-stb/3.3.1/lwjgl-stb-3.3.1.jar",
+    "path": "native-client/libraries/lwjgl-stb-3.3.1.jar",
+    "sha256": "64e5ccce2fc7cbcf0c834a5be8642d9e2498ce3fe31c14ff1df741878a3f8121"
+  },
+  "lwjgl-stb-natives-macos-arm64": {
+    "url": "https://repo.maven.apache.org/maven2/org/lwjgl/lwjgl-stb/3.3.1/lwjgl-stb-3.3.1-natives-macos-arm64.jar",
+    "path": "native-client/libraries/lwjgl-stb-3.3.1-natives-macos-arm64.jar",
+    "sha256": "0d7a0ff2db68f3abe4169167e2f489dff77bda282f42f86e41e944be7c436dd8"
+  },
+  "lwjgl-stb-natives-macos": {
+    "url": "https://repo.maven.apache.org/maven2/org/lwjgl/lwjgl-stb/3.3.1/lwjgl-stb-3.3.1-natives-macos.jar",
+    "path": "native-client/libraries/lwjgl-stb-3.3.1-natives-macos.jar",
+    "sha256": "a178d66030399c698978dfe4a9500b7557a9daf4c061e83c8870337e9b0bd3e7"
+  },
+  "lwjgl-tinyfd": {
+    "url": "https://repo.maven.apache.org/maven2/org/lwjgl/lwjgl-tinyfd/3.3.1/lwjgl-tinyfd-3.3.1.jar",
+    "path": "native-client/libraries/lwjgl-tinyfd-3.3.1.jar",
+    "sha256": "488f51ed95f0fac48d1d87cb0e3bac08c012dcbf6ef3c1688685d708cdbccd56"
+  },
+  "lwjgl-tinyfd-natives-macos-arm64": {
+    "url": "https://repo.maven.apache.org/maven2/org/lwjgl/lwjgl-tinyfd/3.3.1/lwjgl-tinyfd-3.3.1-natives-macos-arm64.jar",
+    "path": "native-client/libraries/lwjgl-tinyfd-3.3.1-natives-macos-arm64.jar",
+    "sha256": "118d5589765d6686d4783719c2de8ca665a2497d8b9dc28ad34fd10ed5343faa"
+  },
+  "lwjgl-tinyfd-natives-macos": {
+    "url": "https://repo.maven.apache.org/maven2/org/lwjgl/lwjgl-tinyfd/3.3.1/lwjgl-tinyfd-3.3.1-natives-macos.jar",
+    "path": "native-client/libraries/lwjgl-tinyfd-3.3.1-natives-macos.jar",
+    "sha256": "1f5c86a2b2c0495aa56a12a74c7c2fc2c9353cc38aa00cc13a324047641c324d"
+  }
+}

@@ -1,5 +1,6 @@
-(() => {
- const W=960,H=540;let state={},recorder,uploads=Promise.resolve(),textures={};
+(async () => {
+ const {startRecording}=await import('/recording-session.js');
+ const W=960,H=540;let state={},recorder,textures={};
  const overlay=document.createElement('canvas');overlay.width=W;overlay.height=H;overlay.style='position:fixed;inset:0;width:100%;height:100%;z-index:99;pointer-events:none';document.body.append(overlay);const hud=overlay.getContext('2d');
  const canvas=document.createElement('canvas');canvas.width=W;canvas.height=H;const ctx=canvas.getContext('2d');const images=new Map();
  const image=src=>{if(!images.has(src)){const im=new Image();im.src=src;images.set(src,im);}return images.get(src);};
@@ -29,8 +30,21 @@
   hud.strokeStyle='#fff';hud.lineWidth=1;hud.beginPath();hud.moveTo(W/2-5,H/2);hud.lineTo(W/2+5,H/2);hud.moveTo(W/2,H/2-5);hud.lineTo(W/2,H/2+5);hud.stroke();
   if(state.won&&state.dragonKilled){hud.fillStyle='#06111ce8';hud.fillRect(160,190,640,105);text('ENDER DRAGON DEFEATED',245,234,25,'#c0ff91');text('Exit portal reached · Game completion verified',221,270,17);}
  }
- async function tick(){try{state=await(await fetch('http://127.0.0.1:3078')).json();if(state.record&&!recorder&&new URL(location.href).searchParams.get('run')===state.run)start();if(!state.record&&recorder?.state==='recording')recorder.stop();}catch{}setTimeout(tick,250);}
+ async function tick(){try{state=await(await fetch(statusBase)).json();if(state.record&&!recorder&&new URL(location.href).searchParams.get('run')===state.run)start();if(!state.record&&recorder?.state==='recording')recorder.stop();}catch{}setTimeout(tick,250);}
  let last=0;function paint(now){if(now-last>75){last=now;drawHUD();const game=[...document.querySelectorAll('canvas')].find(c=>c!==canvas&&c!==overlay);if(game){ctx.drawImage(game,0,0,W,H);ctx.drawImage(overlay,0,0);}}requestAnimationFrame(paint);}
- function start(){const captureId=crypto.randomUUID();recorder=new MediaRecorder(canvas.captureStream(12),{mimeType:'video/webm;codecs=vp9',videoBitsPerSecond:800000});recorder.ondataavailable=e=>{if(e.data.size)uploads=uploads.then(()=>fetch('http://127.0.0.1:3078/recording?id='+captureId,{method:'POST',body:new Blob([e.data],{type:'text/plain'})}));};recorder.onstop=async()=>{await uploads;await fetch('http://127.0.0.1:3078/recording/done?id='+captureId,{method:'POST'});recorder=null;};recorder.start(2000);fetch('http://127.0.0.1:3078/recording/start?id='+captureId,{method:'POST'});}
+ let starting=false,recordFailed=false;
+ const fragment=new URLSearchParams(location.hash.slice(1)),recordToken=fragment.get('token');
+ const statusPort=Number(new URL(location.href).searchParams.get('statusPort')||3078);
+ if(!Number.isInteger(statusPort)||statusPort<1||statusPort>65535)throw Error('Invalid statusPort');
+ const statusBase='http://127.0.0.1:'+statusPort;
+ if(recordToken)history.replaceState(null,'',location.pathname+location.search);
+ async function sendRecord(path,body){const r=await fetch(statusBase+path,{method:'POST',headers:{Authorization:'Bearer '+recordToken},body});if(!r.ok)throw Error('Recording request failed: '+r.status);}
+ async function start(){
+  if(starting||recordFailed)return;starting=true;
+  try{
+   if(!recordToken)throw Error('Recording needs a token URL fragment. See SETUP.md.');
+   recorder=await startRecording({canvas,send:sendRecord,onError:e=>{recordFailed=true;console.error(e.message);},onFinish:()=>{recorder=null;}});
+  }catch(e){recordFailed=true;console.error(e.message);}finally{starting=false;}
+ }
  requestAnimationFrame(paint);tick();
 })();
