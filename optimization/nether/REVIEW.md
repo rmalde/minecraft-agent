@@ -8,7 +8,7 @@ The local survey confirmed three supply chests with a total of 21 obsidian, an i
 
 The entry frame is shifted one block along Z. Three essential obsidian blocks already exist, and seven must be placed. This avoids mining crying obsidian. The exit uses ten obsidian blocks and four ordinary corner supports. At least one obsidian remains for the dragon-fight support. All final-run placements use normal player interactions.
 
-Survey files are local observations from a separate server. Prepared test commands never run in a final recording world. The Nether and stronghold path were then traversed by Astra and JEV in `nether-practice-01`.
+Survey files are local observations from a separate server. Prepared test commands never run in a final recording world. The Nether and stronghold path was then traversed by Astra and JEV in `nether-practice-01`.
 
 ## Camera
 
